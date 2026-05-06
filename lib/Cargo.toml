@@ -1,0 +1,13 @@
+[package]
+name = "libplayback"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+
+# workspace
+clap = { workspace = true }
+log = { workspace = true }
+
+# internal
+playback-toml = { path = "../crates/toml" }

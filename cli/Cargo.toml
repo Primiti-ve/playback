@@ -1,0 +1,18 @@
+[package]
+name = "playback"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "pb"
+path = "src/main.rs"
+
+[dependencies]
+env_logger = { version = "0.11" }
+
+# workspace
+clap = { workspace = true }
+log = { workspace = true }
+
+# internal
+libplayback = { path = "../lib" }

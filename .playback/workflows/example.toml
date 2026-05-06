@@ -1,0 +1,17 @@
+name = "example"
+description = "example playback workflow"
+version = "0.1.0"
+author = "user"
+
+[workflow.env]
+shell = "pwsh"
+
+[workflow.arguments.message]
+name = "arg1"
+type = "positional"
+required = true
+
+[workflow.steps.step1]
+command = "echo"
+arguments = ['{{arg1}}']
+order = 1

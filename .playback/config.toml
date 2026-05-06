@@ -1,0 +1,6 @@
+[workflow]
+stop_on_error = true
+parallel = false
+
+[workflow.exec]
+timeout = 3000

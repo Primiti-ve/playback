@@ -1,0 +1,38 @@
+name = "test"
+description = "example playback workflow"
+version = "0.1.0"
+author = "user"
+
+[workflow.env]
+shell = "pwsh"
+cwd = "."
+env = {
+    test = "hi",
+    test2 = "hello"
+}
+
+[workflow.arguments.message]
+name = "title"
+type = "positional"
+required = true
+
+[workflow.arguments.description]
+name = "description"
+type = "positional"
+required = true
+
+[workflow.steps.step1]
+command = "echo"
+arguments = ['{{title}}']
+order = 1
+
+[workflow.steps.step2]
+command = "echo"
+arguments = {
+    if description != "" {
+        ["{{description}}"]
+    } else {
+        ["no description..."]
+    }
+}
+order = 2

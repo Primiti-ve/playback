@@ -10,4 +10,4 @@ clap = { workspace = true }
 log = { workspace = true }
 
 # internal
-playback-toml = { path = "../crates/toml" }
+playback-toml = { path = "../crates/toml", version = "0.1.0" }

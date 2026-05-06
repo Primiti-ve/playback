@@ -15,4 +15,4 @@ clap = { workspace = true }
 log = { workspace = true }
 
 # internal
-libplayback = { path = "../lib" }
+libplayback = { path = "../lib", version = "0.1.0" }

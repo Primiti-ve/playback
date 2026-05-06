@@ -1,5 +1,9 @@
 [package]
-name = "libplayback"
+name = "playback-lib"
+description = "a simple workflow manager"
+license = "MIT"
+repository = "https://github.com/Primiti-ve/playback"
+readme = "README.md"
 version = "0.1.0"
 edition = "2024"
 

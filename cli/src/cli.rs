@@ -8,7 +8,7 @@ use std::{
 };
 
 use clap::{ArgAction, CommandFactory, Parser, Subcommand, ValueEnum};
-use libplayback::config::Config;
+use playback_lib::config::Config;
 
 use crate::commands;
 

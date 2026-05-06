@@ -1,5 +1,9 @@
 [package]
 name = "playback-toml"
+description = "the custom toml parser for playback"
+license = "MIT"
+repository = "https://github.com/Primiti-ve/playback"
+readme = "README.md"
 version = "0.1.0"
 edition = "2024"
 

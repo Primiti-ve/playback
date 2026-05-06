@@ -1,7 +1,7 @@
-name = "example"
-description = "example playback workflow"
+name = "basics"
+description = "the most basic playback workflow"
 version = "0.1.0"
-author = "user"
+author = "primiti_ve"
 
 [workflow.env]
 shell = "pwsh"

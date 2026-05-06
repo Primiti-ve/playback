@@ -34,6 +34,14 @@ order = 1
 
 4. run it using `pb run example "input"`
 
+## do you have any examples?
+
+check the `.playback/workflows` folder for ungrouped examples.
+
+- `basics.toml` - the most basic playback workflow, doesn't have much
+- `conditions.toml` - shows off the conditions feature
+- `git.toml` - playback workflow for pushing changes to a git repository
+
 ## why should i use this?
 
 `playback` is mostly a research project, and is half-baked (atleast, for right now). don't use playback if you can't handle breaking changes!

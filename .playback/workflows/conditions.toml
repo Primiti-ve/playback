@@ -1,15 +1,10 @@
-name = "test"
-description = "example playback workflow"
+name = "conditions"
+description = "shows off the conditions feature"
 version = "0.1.0"
-author = "user"
+author = "primiti_ve"
 
 [workflow.env]
 shell = "pwsh"
-cwd = "."
-env = {
-    test = "hi",
-    test2 = "hello"
-}
 
 [workflow.arguments.message]
 name = "title"

@@ -1,5 +1,5 @@
-name = "git"
-description = "example git workflow for pushing changes to a repo"
+name = "push"
+description = "playback workflow for pushing changes to a git repository"
 version = "0.1.0"
 author = "primiti_ve"
 

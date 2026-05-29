@@ -1,7 +1,5 @@
-use playback_toml::{Expr, Value, parse};
-
-use std::collections::HashMap;
-use std::error::Error;
+use playback_dsl::{Expr, Value, parse};
+use std::{collections::HashMap, error::Error};
 
 #[derive(Debug)]
 pub struct WorkflowSchema {
@@ -53,10 +51,7 @@ fn get_optional_string(map: &HashMap<String, Value>, key: &str) -> Option<String
     }
 }
 
-fn get_table<'a>(
-    map: &'a HashMap<String, Value>,
-    key: &str,
-) -> Result<&'a HashMap<String, Value>, Box<dyn Error>> {
+fn get_table<'a>(map: &'a HashMap<String, Value>, key: &str) -> Result<&'a HashMap<String, Value>, Box<dyn Error>> {
     match map.get(key) {
         Some(Value::Table(t)) => Ok(t),
         Some(_) => Err(format!("expected '{}' to be a table", key).into()),
@@ -145,11 +140,7 @@ fn parse_arguments(step: &HashMap<String, Value>) -> Result<Arguments, Box<dyn E
             Ok(Arguments::List(args))
         }
 
-        Value::Conditional {
-            condition,
-            then_branch,
-            else_branch,
-        } => {
+        Value::Conditional { condition, then_branch, else_branch } => {
             let then_args = extract_array(then_branch)?;
             let else_args = match else_branch {
                 Some(v) => Some(extract_array(v)?),

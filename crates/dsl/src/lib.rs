@@ -1,3 +1,5 @@
+#![allow(unused, clippy::manual_strip)]
+
 pub mod ast;
 pub mod engine;
 pub mod error;

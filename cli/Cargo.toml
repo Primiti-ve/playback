@@ -4,7 +4,7 @@ description = "a simple workflow manager"
 license = "MIT"
 repository = "https://github.com/Primiti-ve/playback"
 readme = "../README.md"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 
 [[bin]]
@@ -12,11 +12,8 @@ name = "pb"
 path = "src/main.rs"
 
 [dependencies]
-env_logger = { version = "0.11" }
-
-# workspace
-clap = { workspace = true }
-log = { workspace = true }
+miniclap = { version = "0.1.1" }
 
 # internal
 playback-lib = { path = "../lib", version = "0.1.0" }
+playback-logger = { path = "../crates/logger", version = "0.1.0" }

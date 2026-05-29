@@ -1,6 +1,6 @@
 [package]
 name = "playback-lib"
-description = "a simple workflow manager"
+description = "the core utilities for playback"
 license = "MIT"
 repository = "https://github.com/Primiti-ve/playback"
 readme = "README.md"
@@ -9,9 +9,6 @@ edition = "2024"
 
 [dependencies]
 
-# workspace
-clap = { workspace = true }
-log = { workspace = true }
-
 # internal
-playback-toml = { path = "../crates/toml", version = "0.1.0" }
+playback-dsl = { path = "../crates/dsl", version = "0.1.0" }
+playback-logger = { path = "../crates/logger", version = "0.1.0" }

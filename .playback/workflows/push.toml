@@ -1,39 +1,12 @@
 name = "push"
-description = "playback workflow for pushing changes to a git repository"
+description = "push changes to the git repository"
 version = "0.1.0"
 author = "primiti_ve"
 
 [workflow.env]
 shell = "pwsh"
 
-[workflow.arguments.message]
-name = "title"
-type = "positional"
-required = true
-
-[workflow.arguments.description]
-name = "description"
-type = "positional"
-default = ""
-required = false
-
-[workflow.steps.step1]
-command = "git"
-arguments = ["add", "-A"]
-order = 1
-
-[workflow.steps.step2]
-command = "git"
-arguments = {
-    if description != "" {
-        ["commit", "-m", "{{title}}", "-m", "{{description}}"]
-    } else {
-        ["commit", "-m", "{{title}}"]
-    }
-}
-order = 2
-
-[workflow.steps.step3]
+[workflow.steps."push commits"]
 command = "git"
 arguments = ["push", "origin", "main"]
-order = 3
+order = 1

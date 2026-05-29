@@ -1,47 +1,25 @@
 #![allow(unused)]
 
-use std::{
-    error::Error,
-    fs::File,
-    io::{self, Write},
-    path::PathBuf,
-};
-
-use clap::{ArgAction, CommandFactory, Parser, Subcommand, ValueEnum};
-use playback_lib::config::Config;
-
 use crate::commands;
+use miniclap::{App, Arg, ArgKind};
+use playback_lib::config::Config;
+use std::error::Error;
 
-#[derive(Parser, Debug)]
-#[command(name = "libplayback", version = "0.1.0", about = "a simple workflow manager")]
-pub struct Cli {
-    #[command(subcommand)]
-    command: Option<Subcommands>,
-
-    #[arg(
-        short = 'v',
-        long = "verbose",
-        help = "whether or not to enable all logging",
-        action = ArgAction::Count
-    )]
-    pub verbose: u8,
-}
-
-#[derive(Subcommand, Debug)]
+#[derive(Debug)]
 pub enum Subcommands {
-    #[command(name = "new", about = "create a new libplayback workflow")]
     New { name: String },
-
-    #[command(name = "run", about = "replay a libplayback workflow")]
-    Run {
-        name: String,
-
-        #[arg(trailing_var_arg = true)]
-        args: Vec<String>,
-    },
+    Run { name: String, args: Vec<String> },
 }
 
-pub fn run_command(command: Subcommands, config: Config) -> Result<(), Box<dyn Error>> {
+pub fn build_cli() -> App {
+    App::new("playback")
+        .about("a simple workflow manager")
+        .arg(Arg::new("verbose", 'v', ArgKind::Count))
+        .subcommand(App::new("new").about("create a new playback workflow").arg(Arg::positional("name")))
+        .subcommand(App::new("run").about("replay a playback workflow").arg(Arg::positional("name")).arg(Arg::positional("args")))
+}
+
+pub fn run_command(command: Subcommands, _config: Config) -> Result<(), Box<dyn Error>> {
     match command {
         Subcommands::New { name } => {
             commands::new(name.as_str())?;
@@ -56,16 +34,46 @@ pub fn run_command(command: Subcommands, config: Config) -> Result<(), Box<dyn E
 }
 
 pub fn to_config() -> (Option<Subcommands>, Config) {
-    let args = Cli::parse();
-    let mut config = Config::default();
+    let argv: Vec<String> = std::env::args().skip(1).collect();
 
-    config.verbose = args.verbose;
+    let app = build_cli();
+    let matches = app.parse();
 
-    (args.command, config)
+    let mut config = Config {
+        verbose: matches.count("verbose") as u8,
+    };
+
+    config.verbose = matches.count("verbose") as u8;
+
+    if let Some(sub) = matches.subcommand("new") {
+        let positionals = sub.positionals();
+        let name = positionals.first().cloned().unwrap_or_default();
+
+        return (Some(Subcommands::New { name }), config);
+    }
+
+    if let Some(sub) = matches.subcommand("run") {
+        let positionals = sub.positionals();
+        let name = positionals.first().cloned().unwrap_or_default();
+
+        let args = if positionals.len() > 1 { positionals[1..].to_vec() } else { vec![] };
+
+        return (Some(Subcommands::Run { name, args }), config);
+    }
+
+    if let Some((index, workflow_name)) = argv.iter().enumerate().find(|(_, arg)| !arg.starts_with('-')) {
+        let workflow_path = format!(".playback/workflows/{}.toml", workflow_name);
+
+        if std::path::Path::new(&workflow_path).exists() {
+            let args = if argv.len() > index + 1 { argv[index + 1..].to_vec() } else { vec![] };
+
+            return (Some(Subcommands::Run { name: workflow_name.clone(), args }), config);
+        }
+    }
+
+    (None, config)
 }
 
 pub fn print_help() {
-    Cli::command().print_help().unwrap();
-
-    println!();
+    build_cli().print_help();
 }

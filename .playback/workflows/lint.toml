@@ -1,0 +1,22 @@
+name = "lint"
+description = "lint/check the code for quality"
+version = "0.1.0"
+author = "primiti_ve"
+
+[workflow.env]
+shell = "pwsh"
+
+[workflow.steps."cargo check"]
+command = "cargo"
+arguments = ["check"]
+order = 1
+
+[workflow.steps."cargo clippy"]
+command = "cargo"
+arguments = ["clippy"]
+order = 2
+
+[workflow.steps."run tests"]
+command = "cargo"
+arguments = ["test"]
+order = 3

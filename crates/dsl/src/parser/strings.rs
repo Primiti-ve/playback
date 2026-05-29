@@ -53,10 +53,7 @@ impl<'a> Parser<'a> {
                 Some('\\') => {
                     self.advance();
 
-                    if matches!(
-                        self.peek(),
-                        Some(' ') | Some('\t') | Some('\n') | Some('\r')
-                    ) {
+                    if matches!(self.peek(), Some(' ') | Some('\t') | Some('\n') | Some('\r')) {
                         self.skip_whitespace_and_newlines();
                     } else {
                         s.push(self.parse_escape_char()?);

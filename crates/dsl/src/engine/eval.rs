@@ -11,10 +11,7 @@ pub fn eval_expr(expr: &Expr, ctx: &Context) -> Result<bool, String> {
 
 fn eval_atom(expr: &Expr, ctx: &Context) -> Result<String, String> {
     match expr {
-        Expr::Identifier(name) => ctx
-            .get(name)
-            .cloned()
-            .ok_or_else(|| format!("unknown variable: {}", name)),
+        Expr::Identifier(name) => ctx.get(name).cloned().ok_or_else(|| format!("unknown variable: {}", name)),
         Expr::String(s) => Ok(s.clone()),
         _ => Err("invalid atom".into()),
     }
@@ -22,11 +19,7 @@ fn eval_atom(expr: &Expr, ctx: &Context) -> Result<String, String> {
 
 pub fn eval_value(value: &Value, ctx: &Context) -> Result<Value, String> {
     match value {
-        Value::Conditional {
-            condition,
-            then_branch,
-            else_branch,
-        } => {
+        Value::Conditional { condition, then_branch, else_branch } => {
             if eval_expr(condition, ctx)? {
                 eval_value(then_branch, ctx)
             } else if let Some(else_b) = else_branch {

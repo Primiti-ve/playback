@@ -1,7 +1,7 @@
-use std::io::Write;
+#![allow(unused, clippy::field_reassign_with_default)]
 
-use env_logger::Env;
-use log::{LevelFilter, debug, info};
+use playback_logger::{Level, debug, error, info};
+use std::io::Write;
 
 pub mod cli;
 pub mod commands;
@@ -11,40 +11,29 @@ fn main() {
 
     if command.is_none() {
         cli::print_help();
+
         std::process::exit(0);
-    };
+    }
 
     let command = command.unwrap();
-    let log_level: &str;
 
-    match config.verbose {
-        0 => {
-            log_level = LevelFilter::Error.as_str();
-        },
+    let log_level = match config.verbose {
+        0 => Level::Error,
+        1 => Level::Warn,
+        2 => Level::Info,
+        _ => Level::Debug,
+    };
 
-        1 => {
-            log_level = LevelFilter::Warn.as_str();
-        },
+    playback_logger::init(log_level);
 
-        2 => {
-            log_level = LevelFilter::Info.as_str();
-        },
-
-        _ => {
-            log_level = LevelFilter::Debug.as_str();
-        },
-    }
-
-    env_logger::Builder::from_env(Env::default().default_filter_or(log_level)).init();
-
-    debug!(target: "cli::main", "log level: `{}`", format!("{}", log_level).to_lowercase());
-    info!(target: "cli::main", "running command `{}`", format!("{:?}", &command).to_lowercase());
+    debug!("cli::main", "log level: `{}`", log_level.as_str().to_lowercase());
+    info!("cli::main", "running command `{}`", format!("{:?}", &command).to_lowercase());
 
     if let Err(err) = cli::run_command(command, config) {
-        log::error!("application error: `{err}`");
+        error!("cli::main", "application error: {err}");
     }
 
-    debug!(target: "cli::main", "exiting with return code `0`");
+    debug!("cli::main", "exiting with return code `0`");
 
     std::io::stderr().flush().ok();
     std::io::stdout().flush().ok();

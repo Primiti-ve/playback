@@ -1,17 +1,15 @@
-use std::collections::HashMap;
-use std::error::Error;
-
-use crate::schemas::decode_workflow;
-
 use super::args::run_steps;
+use crate::schemas::decode_workflow;
+use playback_logger::{debug, info};
+use std::{collections::HashMap, error::Error};
 
 pub fn run_workflow(workflow_name: &str, cli_args: Vec<String>) -> Result<(), Box<dyn Error>> {
-    log::info!("running workflow `{}`", workflow_name);
+    info!("lib::workflow::run_workflow", "running workflow `{}`", workflow_name);
 
     let content = std::fs::read_to_string(format!(".playback/workflows/{}.toml", workflow_name))?;
     let manifest = decode_workflow(content.as_str())?;
 
-    log::debug!("manifest: {:#?}", manifest);
+    debug!("lib::workflow::run_workflow", "manifest: {:#?}", manifest);
 
     let mut ctx = HashMap::new();
 

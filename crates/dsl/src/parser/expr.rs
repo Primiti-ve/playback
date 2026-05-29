@@ -1,6 +1,5 @@
 use super::core::Parser;
-use crate::ast::Expr;
-use crate::error::ParseError;
+use crate::{ast::Expr, error::ParseError};
 
 impl<'a> Parser<'a> {
     pub fn parse_expr(&mut self) -> Result<Expr, ParseError> {

@@ -7,9 +7,7 @@ pub struct Context {
 
 impl Context {
     pub fn new() -> Self {
-        Self {
-            vars: HashMap::new(),
-        }
+        Self { vars: HashMap::new() }
     }
 
     pub fn with(vars: HashMap<String, String>) -> Self {
@@ -18,5 +16,11 @@ impl Context {
 
     pub fn get(&self, key: &str) -> Option<&String> {
         self.vars.get(key)
+    }
+}
+
+impl Default for Context {
+    fn default() -> Self {
+        Self::new()
     }
 }

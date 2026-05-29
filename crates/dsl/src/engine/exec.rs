@@ -9,9 +9,7 @@ pub fn execute_steps(steps: &Value, ctx: &Context) -> Result<(), String> {
         _ => return Err("steps must be a table".into()),
     };
 
-    for (name, step) in steps_table {
-        println!("→ Running step: {}", name);
-
+    for step in steps_table.values() {
         execute_step(step, ctx)?;
     }
 
@@ -26,6 +24,7 @@ fn execute_step(step: &Value, ctx: &Context) -> Result<(), String> {
 
     let command = match table.get("command") {
         Some(Value::String(s)) => s.clone(),
+
         _ => return Err("missing command".into()),
     };
 
@@ -41,6 +40,7 @@ fn execute_step(step: &Value, ctx: &Context) -> Result<(), String> {
                 for v in arr {
                     match v {
                         Value::String(s) => args.push(interpolate(&s, ctx)),
+
                         _ => return Err("arguments must be strings".into()),
                     }
                 }
@@ -51,10 +51,7 @@ fn execute_step(step: &Value, ctx: &Context) -> Result<(), String> {
 
     println!("  {} {:?}", command, args);
 
-    let status = Command::new(&command)
-        .args(&args)
-        .status()
-        .map_err(|e| e.to_string())?;
+    let status = Command::new(&command).args(&args).status().map_err(|e| e.to_string())?;
 
     if !status.success() {
         return Err(format!("command failed: {}", command));
@@ -68,6 +65,7 @@ fn interpolate(input: &str, ctx: &Context) -> String {
 
     for (key, val) in &ctx.vars {
         let pattern = format!("{{{{{}}}}}", key);
+
         result = result.replace(&pattern, val);
     }
 

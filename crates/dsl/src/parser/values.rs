@@ -1,6 +1,5 @@
 use super::core::Parser;
-use crate::ast::Value;
-use crate::error::ParseError;
+use crate::{ast::Value, error::ParseError};
 
 impl<'a> Parser<'a> {
     pub fn parse_key(&mut self) -> Result<Vec<String>, ParseError> {
@@ -22,8 +21,7 @@ impl<'a> Parser<'a> {
             Some(c) if c.is_alphanumeric() || c == '-' || c == '_' => {
                 let mut key = String::new();
 
-                while matches!(self.peek(), Some(c) if c.is_alphanumeric() || c == '-' || c == '_')
-                {
+                while matches!(self.peek(), Some(c) if c.is_alphanumeric() || c == '-' || c == '_') {
                     key.push(self.advance().unwrap());
                 }
 
@@ -66,8 +64,7 @@ impl<'a> Parser<'a> {
             }
         }
 
-        let code =
-            u32::from_str_radix(&hex, 16).map_err(|_| self.err("invalid unicode codepoint"))?;
+        let code = u32::from_str_radix(&hex, 16).map_err(|_| self.err("invalid unicode codepoint"))?;
 
         char::from_u32(code).ok_or_else(|| self.err("invalid unicode codepoint"))
     }
@@ -96,11 +93,7 @@ impl<'a> Parser<'a> {
 
     pub fn is_block_value(&mut self) -> Result<bool, ParseError> {
         // Skip the opening '{' and any whitespace/newlines to peek at what follows.
-        let rest = self
-            .remaining()
-            .chars()
-            .skip(1)
-            .skip_while(|c| matches!(c, ' ' | '\t' | '\n' | '\r'));
+        let rest = self.remaining().chars().skip(1).skip_while(|c| matches!(c, ' ' | '\t' | '\n' | '\r'));
 
         let peeked: String = rest.take(2).collect();
 
@@ -209,9 +202,7 @@ impl<'a> Parser<'a> {
     }
 
     pub fn parse_number_or_bool_or_date(&mut self) -> Result<Value, ParseError> {
-        if self.remaining().starts_with("true")
-            && !self.remaining()[4..].starts_with(|c: char| c.is_alphanumeric() || c == '_')
-        {
+        if self.remaining().starts_with("true") && !self.remaining()[4..].starts_with(|c: char| c.is_alphanumeric() || c == '_') {
             for _ in 0..4 {
                 self.advance();
             }
@@ -219,9 +210,7 @@ impl<'a> Parser<'a> {
             return Ok(Value::Boolean(true));
         }
 
-        if self.remaining().starts_with("false")
-            && !self.remaining()[5..].starts_with(|c: char| c.is_alphanumeric() || c == '_')
-        {
+        if self.remaining().starts_with("false") && !self.remaining()[5..].starts_with(|c: char| c.is_alphanumeric() || c == '_') {
             for _ in 0..5 {
                 self.advance();
             }
@@ -238,49 +227,28 @@ impl<'a> Parser<'a> {
         let raw = raw.trim_end().to_string();
         let clean = raw.replace('_', "");
 
-        if clean.contains('.')
-            || clean.contains('e')
-            || clean.contains('E')
-            || clean == "inf"
-            || clean == "+inf"
-            || clean == "-inf"
-            || clean == "nan"
-            || clean == "+nan"
-            || clean == "-nan"
-        {
+        if clean.contains('.') || clean.contains('e') || clean.contains('E') || clean == "inf" || clean == "+inf" || clean == "-inf" || clean == "nan" || clean == "+nan" || clean == "-nan" {
             return match clean.as_str() {
                 "inf" | "+inf" => Ok(Value::Float(f64::INFINITY)),
                 "-inf" => Ok(Value::Float(f64::NEG_INFINITY)),
                 "nan" | "+nan" | "-nan" => Ok(Value::Float(f64::NAN)),
 
-                _ => clean
-                    .parse::<f64>()
-                    .map(Value::Float)
-                    .map_err(|_| self.err(&format!("invalid float: {}", raw))),
+                _ => clean.parse::<f64>().map(Value::Float).map_err(|_| self.err(&format!("invalid float: {}", raw))),
             };
         }
 
         if clean.starts_with("0x") {
-            return i64::from_str_radix(&clean[2..], 16)
-                .map(Value::Integer)
-                .map_err(|_| self.err(&format!("invalid hex: {}", raw)));
+            return i64::from_str_radix(&clean[2..], 16).map(Value::Integer).map_err(|_| self.err(&format!("invalid hex: {}", raw)));
         }
 
         if clean.starts_with("0o") {
-            return i64::from_str_radix(&clean[2..], 8)
-                .map(Value::Integer)
-                .map_err(|_| self.err(&format!("invalid octal: {}", raw)));
+            return i64::from_str_radix(&clean[2..], 8).map(Value::Integer).map_err(|_| self.err(&format!("invalid octal: {}", raw)));
         }
 
         if clean.starts_with("0b") {
-            return i64::from_str_radix(&clean[2..], 2)
-                .map(Value::Integer)
-                .map_err(|_| self.err(&format!("invalid binary: {}", raw)));
+            return i64::from_str_radix(&clean[2..], 2).map(Value::Integer).map_err(|_| self.err(&format!("invalid binary: {}", raw)));
         }
 
-        clean
-            .parse::<i64>()
-            .map(Value::Integer)
-            .map_err(|_| self.err(&format!("invalid value: {}", raw)))
+        clean.parse::<i64>().map(Value::Integer).map_err(|_| self.err(&format!("invalid value: {}", raw)))
     }
 }

@@ -1,15 +1,9 @@
 use super::core::Parser;
-use crate::ast::Value;
-use crate::error::ParseError;
+use crate::{ast::Value, error::ParseError};
 use std::collections::HashMap;
 
 impl<'a> Parser<'a> {
-    pub fn insert_dotted(
-        &mut self,
-        map: &mut HashMap<String, Value>,
-        keys: &[String],
-        val: Value,
-    ) -> Result<(), String> {
+    pub fn insert_dotted(&mut self, map: &mut HashMap<String, Value>, keys: &[String], val: Value) -> Result<(), String> {
         if keys.is_empty() {
             return Err("empty key".into());
         }
@@ -23,9 +17,7 @@ impl<'a> Parser<'a> {
 
             return Ok(());
         }
-        let entry = map
-            .entry(keys[0].clone())
-            .or_insert_with(|| Value::Table(HashMap::new()));
+        let entry = map.entry(keys[0].clone()).or_insert_with(|| Value::Table(HashMap::new()));
 
         match entry {
             Value::Table(inner) => self.insert_dotted(inner, &keys[1..], val),
@@ -34,19 +26,13 @@ impl<'a> Parser<'a> {
         }
     }
 
-    pub fn ensure_array(
-        &mut self,
-        map: &mut HashMap<String, Value>,
-        path: &[String],
-    ) -> Result<(), String> {
+    pub fn ensure_array(&mut self, map: &mut HashMap<String, Value>, path: &[String]) -> Result<(), String> {
         if path.is_empty() {
             return Err("empty path".into());
         }
 
         if path.len() == 1 {
-            let entry = map
-                .entry(path[0].clone())
-                .or_insert_with(|| Value::Array(vec![]));
+            let entry = map.entry(path[0].clone()).or_insert_with(|| Value::Array(vec![]));
 
             if !matches!(entry, Value::Array(_)) {
                 return Err(format!("{} is not an array", path[0]));
@@ -55,9 +41,7 @@ impl<'a> Parser<'a> {
             return Ok(());
         }
 
-        let entry = map
-            .entry(path[0].clone())
-            .or_insert_with(|| Value::Table(HashMap::new()));
+        let entry = map.entry(path[0].clone()).or_insert_with(|| Value::Table(HashMap::new()));
 
         match entry {
             Value::Table(inner) => self.ensure_array(inner, &path[1..]),
@@ -74,11 +58,7 @@ impl<'a> Parser<'a> {
         }
     }
 
-    pub fn push_array_entry(
-        &mut self,
-        map: &mut HashMap<String, Value>,
-        path: &[String],
-    ) -> Result<(), String> {
+    pub fn push_array_entry(&mut self, map: &mut HashMap<String, Value>, path: &[String]) -> Result<(), String> {
         if path.is_empty() {
             return Err("empty path".into());
         }
@@ -109,13 +89,7 @@ impl<'a> Parser<'a> {
         }
     }
 
-    pub fn insert_into_last_array_entry(
-        &mut self,
-        root: &mut HashMap<String, Value>,
-        array_path: &[String],
-        rel_keys: &[String],
-        val: Value,
-    ) -> Result<(), String> {
+    pub fn insert_into_last_array_entry(&mut self, root: &mut HashMap<String, Value>, array_path: &[String], rel_keys: &[String], val: Value) -> Result<(), String> {
         if array_path.is_empty() {
             return self.insert_dotted(root, rel_keys, val);
         }
@@ -129,9 +103,7 @@ impl<'a> Parser<'a> {
                 }
             }
 
-            Some(Value::Table(inner)) => {
-                self.insert_into_last_array_entry(inner, &array_path[1..], rel_keys, val)
-            }
+            Some(Value::Table(inner)) => self.insert_into_last_array_entry(inner, &array_path[1..], rel_keys, val),
 
             Some(Value::Array(arr)) => {
                 if let Some(Value::Table(last)) = arr.last_mut() {
@@ -174,8 +146,7 @@ impl<'a> Parser<'a> {
 
             let val = self.parse_value()?;
 
-            self.insert_dotted(&mut map, &keys, val)
-                .map_err(|e| self.err(&e))?;
+            self.insert_dotted(&mut map, &keys, val).map_err(|e| self.err(&e))?;
 
             self.skip_ws_and_comments();
 

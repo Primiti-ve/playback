@@ -1,0 +1,10 @@
+[package]
+name = "playback-dsl"
+description = "the playback file parser"
+license = "MIT"
+repository = "https://github.com/Primiti-ve/playback"
+readme = "README.md"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]

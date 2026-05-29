@@ -1,13 +1,8 @@
-use std::collections::HashMap;
-use std::error::Error;
-use std::process::Command;
-
 use crate::schemas::{Arguments, WorkflowSchema};
+use playback_dsl::Expr;
+use std::{collections::HashMap, error::Error, process::Command};
 
-pub fn run_steps(
-    manifest: &WorkflowSchema,
-    ctx: &HashMap<String, String>,
-) -> Result<(), Box<dyn Error>> {
+pub fn run_steps(manifest: &WorkflowSchema, ctx: &HashMap<String, String>) -> Result<(), Box<dyn Error>> {
     for step in &manifest.steps {
         println!("\n> step: {}", step.name);
         println!("  command: {}", step.command);
@@ -22,18 +17,11 @@ pub fn run_steps(
     Ok(())
 }
 
-pub fn resolve_arguments(
-    args: &Arguments,
-    ctx: &HashMap<String, String>,
-) -> Result<Vec<String>, Box<dyn Error>> {
+pub fn resolve_arguments(args: &Arguments, ctx: &HashMap<String, String>) -> Result<Vec<String>, Box<dyn Error>> {
     match args {
         Arguments::List(list) => Ok(list.iter().map(|s| interpolate(s, ctx)).collect()),
 
-        Arguments::Conditional {
-            condition,
-            then_args,
-            else_args,
-        } => {
+        Arguments::Conditional { condition, then_args, else_args } => {
             if eval_condition(condition, ctx) {
                 Ok(then_args.iter().map(|s| interpolate(s, ctx)).collect())
             } else if let Some(else_args) = else_args {
@@ -56,8 +44,8 @@ pub fn interpolate(input: &str, ctx: &HashMap<String, String>) -> String {
     out
 }
 
-pub fn eval_condition(expr: &playback_toml::Expr, ctx: &HashMap<String, String>) -> bool {
-    use playback_toml::Expr::*;
+pub fn eval_condition(expr: &Expr, ctx: &HashMap<String, String>) -> bool {
+    use Expr::*;
 
     match expr {
         Identifier(name) => ctx.get(name).is_some(),
@@ -67,8 +55,8 @@ pub fn eval_condition(expr: &playback_toml::Expr, ctx: &HashMap<String, String>)
     }
 }
 
-pub fn eval_expr(expr: &playback_toml::Expr, ctx: &HashMap<String, String>) -> String {
-    use playback_toml::Expr::*;
+pub fn eval_expr(expr: &Expr, ctx: &HashMap<String, String>) -> String {
+    use Expr::*;
 
     match expr {
         Identifier(name) => ctx.get(name).cloned().unwrap_or_default(),
@@ -83,22 +71,12 @@ pub fn quote_arg(arg: &str) -> String {
     format!("\"{}\"", escaped)
 }
 
-pub fn run_command(
-    manifest: &WorkflowSchema,
-    command: &str,
-    args: &[String],
-) -> Result<(), Box<dyn Error>> {
+pub fn run_command(manifest: &WorkflowSchema, command: &str, args: &[String]) -> Result<(), Box<dyn Error>> {
     let shell = manifest
         .env
         .as_ref()
         .and_then(|e| e.shell.clone())
-        .unwrap_or_else(|| {
-            if cfg!(target_os = "windows") {
-                "pwsh".to_string()
-            } else {
-                "sh".to_string()
-            }
-        });
+        .unwrap_or_else(|| if cfg!(target_os = "windows") { "pwsh".to_string() } else { "sh".to_string() });
 
     // Build command string
     let mut full_cmd = String::new();

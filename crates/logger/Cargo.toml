@@ -1,6 +1,6 @@
 [package]
-name = "playback-toml"
-description = "the custom toml parser for playback"
+name = "playback-logger"
+description = "the no-dependency alternative to `log` and `env_logger`"
 license = "MIT"
 repository = "https://github.com/Primiti-ve/playback"
 readme = "README.md"

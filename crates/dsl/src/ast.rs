@@ -1,5 +1,4 @@
-use std::collections::HashMap;
-use std::fmt;
+use std::{collections::HashMap, fmt};
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Value {
@@ -30,7 +29,6 @@ impl fmt::Display for Expr {
         match self {
             Expr::Identifier(s) => write!(f, "{}", s),
             Expr::String(s) => write!(f, "{:?}", s),
-
             Expr::NotEquals(lhs, rhs) => write!(f, "{} != {}", lhs, rhs),
             Expr::Equals(lhs, rhs) => write!(f, "{} == {}", lhs, rhs),
         }
@@ -67,58 +65,13 @@ impl fmt::Display for Value {
                 write!(f, "}}")
             }
 
-            Value::Conditional {
-                condition,
-                then_branch,
-                else_branch,
-            } => {
+            Value::Conditional { condition, then_branch, else_branch } => {
                 write!(f, "if {} {{ {} }}", condition, then_branch)?;
-
-                if let Some(else_b) = else_branch {
-                    write!(f, " else {{ {} }}", else_b)?;
+                if let Some(e) = else_branch {
+                    write!(f, " else {{ {} }}", e)?;
                 }
-
                 Ok(())
             }
         }
     }
-}
-
-#[derive(Debug, Clone)]
-pub struct ParseError {
-    pub message: String,
-    pub line: usize,
-    pub column: usize,
-    pub snippet: String,
-}
-
-impl fmt::Display for ParseError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "parse error at line {}, column {}: {}\nline:\n{:?}",
-            self.line, self.column, self.message, self.snippet
-        )
-    }
-}
-
-pub struct Parser<'a> {
-    input: &'a str,
-    pos: usize,
-    line: usize,
-    column: usize,
-}
-
-impl<'a> Parser<'a> {
-    
-
-    
-
-    
-
-    
-}
-
-pub fn parse(input: &str) -> Result<HashMap<String, Value>, ParseError> {
-    Parser::new(input).parse()
 }

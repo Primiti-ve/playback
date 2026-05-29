@@ -1,0 +1,34 @@
+name = "commit"
+description = "commit changes to the git repository"
+version = "0.1.0"
+author = "primiti_ve"
+
+[workflow.env]
+shell = "pwsh"
+
+[workflow.arguments.message]
+name = "title"
+type = "positional"
+required = true
+
+[workflow.arguments.description]
+name = "description"
+type = "positional"
+default = ""
+required = false
+
+[workflow.steps."add changes"]
+command = "git"
+arguments = ["add", "-A"]
+order = 1
+
+[workflow.steps."commit changes"]
+command = "git"
+arguments = {
+    if description != "" {
+        ["commit", "-m", "{{title}}", "-m", "{{description}}"]
+    } else {
+        ["commit", "-m", "{{title}}"]
+    }
+}
+order = 2

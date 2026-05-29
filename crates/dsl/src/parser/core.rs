@@ -1,5 +1,4 @@
-use crate::ast::Value;
-use crate::error::ParseError;
+use crate::{ast::Value, error::ParseError};
 use std::collections::HashMap;
 
 pub struct Parser<'a> {
@@ -11,12 +10,7 @@ pub struct Parser<'a> {
 
 impl<'a> Parser<'a> {
     pub fn new(input: &'a str) -> Self {
-        Self {
-            input,
-            pos: 0,
-            line: 1,
-            column: 1,
-        }
+        Self { input, pos: 0, line: 1, column: 1 }
     }
 
     pub fn remaining(&self) -> &str {
@@ -49,10 +43,7 @@ impl<'a> Parser<'a> {
     }
 
     pub fn skip_whitespace_and_newlines(&mut self) {
-        while matches!(
-            self.peek(),
-            Some(' ') | Some('\t') | Some('\n') | Some('\r')
-        ) {
+        while matches!(self.peek(), Some(' ') | Some('\t') | Some('\n') | Some('\r')) {
             self.advance();
         }
     }
@@ -101,11 +92,7 @@ impl<'a> Parser<'a> {
     }
 
     pub fn current_line(&self) -> String {
-        self.input
-            .lines()
-            .nth(self.line - 1)
-            .unwrap_or("")
-            .to_string()
+        self.input.lines().nth(self.line - 1).unwrap_or("").to_string()
     }
 
     pub fn parse(&mut self) -> Result<HashMap<String, Value>, ParseError> {
@@ -158,10 +145,8 @@ impl<'a> Parser<'a> {
                     current_path = path.clone();
 
                     if is_array_table {
-                        self.ensure_array(&mut root, &path)
-                            .map_err(|e| self.err(&e))?;
-                        self.push_array_entry(&mut root, &path)
-                            .map_err(|e| self.err(&e))?;
+                        self.ensure_array(&mut root, &path).map_err(|e| self.err(&e))?;
+                        self.push_array_entry(&mut root, &path).map_err(|e| self.err(&e))?;
                     }
                 }
 
@@ -186,16 +171,10 @@ impl<'a> Parser<'a> {
                     full_path.extend(keys);
 
                     if is_array_table && !current_path.is_empty() {
-                        self.insert_into_last_array_entry(
-                            &mut root,
-                            &current_path,
-                            &full_path[current_path.len()..],
-                            val,
-                        )
-                        .map_err(|e| self.err(&e))?;
-                    } else {
-                        self.insert_dotted(&mut root, &full_path, val)
+                        self.insert_into_last_array_entry(&mut root, &current_path, &full_path[current_path.len()..], val)
                             .map_err(|e| self.err(&e))?;
+                    } else {
+                        self.insert_dotted(&mut root, &full_path, val).map_err(|e| self.err(&e))?;
                     }
                 }
             }

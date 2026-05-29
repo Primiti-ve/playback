@@ -36,11 +36,12 @@ order = 1
 
 ## do you have any examples?
 
-check the `.playback/workflows` folder for ungrouped examples.
+check the `examples` folder for ungrouped examples.
 
 - `basics.toml` - the most basic playback workflow, doesn't have much
-- `conditions.toml` - shows off the conditions feature
-- `git.toml` - playback workflow for pushing changes to a git repository
+- `conditions.toml` - shows off the custom `conditions` feature
+
+you can also check `.playback/workflows` for workflows used internally in the development of playback!
 
 ## why should i use this?
 
